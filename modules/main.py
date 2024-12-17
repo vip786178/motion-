@@ -347,9 +347,12 @@ async def txt_handler(bot: Client, m: Message):
     else:
         thumb == "no"
 
-    count =int(raw_text)
-    
-     try:
+    if len(links) == 1:
+        count = 1
+    else:
+        count = int(raw_text)
+
+    try:
         for i in range(count - 1, len(links)):
 
             V = links[i][1].replace("file/d/","uc?export=download&id=").replace("www.youtube-nocookie.com/embed", "youtu.be").replace("?modestbranding=1", "").replace("/view?usp=sharing","") # .replace("mpd","m3u8")
