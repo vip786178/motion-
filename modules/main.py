@@ -833,8 +833,8 @@ try:
                 filename = res_file
                 await prog.delete(True)
                 await helper.send_video_normal(bot, m, cc, filename, thumb, name, prog)
-                    count += 1
-                    time.sleep(1)
+                count += 1
+                time.sleep(1)
                 
             
         except Exception as e:
