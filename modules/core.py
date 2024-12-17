@@ -150,6 +150,45 @@ def time_name():
     current_time = now.strftime("%H%M%S")
     return f"{date} {current_time}.mp4"
 
+async def download_video(url, cmd, name):
+    download_cmd = f'{cmd} -R 25 --fragment-retries 25 --external-downloader aria2c --downloader-args "aria2c: -x 16 -j 32"'
+    global failed_counter
+    print(download_cmd)
+    logging.info(download_cmd)
+    k = subprocess.run(download_cmd, shell=True)
+    
+    # Check if the URL is of type 'visionias' or 'penpencilvod'
+    if "visionias" in cmd:
+        return await download_visionias(url, cmd, name)
+    elif "penpencilvod" in cmd:
+        return await download_penpencilvod(url, cmd, name)
+    else:
+        # Default handling for other types of URLs
+        return await default_download(url, cmd, name)
+
+async def download_visionias(url, cmd, name):
+    global failed_counter
+    # Retry logic for 'visionias' URLs
+    if failed_counter <= 10:
+        failed_counter += 1
+        await asyncio.sleep(5)
+        return await download_video(url, cmd, name)
+    else:
+        # Reset failed_counter if the download succeeds
+        failed_counter = 0
+        return await default_download(url, cmd, name)
+
+async def download_penpencilvod(url, cmd, name):
+    global failed_counter
+    # Retry logic for 'penpencilvod' URLs
+    if failed_counter <= 10:
+        failed_counter += 1
+        await asyncio.sleep(5)
+        return await download_video(url, cmd, name)
+    else:
+        # Reset failed_counter if the download succeeds
+        failed_counter = 0
+        return await default_download(url, cmd, name)
 
 async def download_video(url,cmd, name):
     download_cmd = f'{cmd} -R 25 --fragment-retries 25 --external-downloader aria2c --downloader-args "aria2c: -x 16 -j 32"'
