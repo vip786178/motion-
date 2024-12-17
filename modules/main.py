@@ -711,140 +711,45 @@ try:
                 
             if "drive" in url:
                 try:
-                    ka = await helper.download(url, name)
-                    message = await bot.send_document(chat_id=m.chat.id,document=ka, caption=cc1)
-                    if accept_logs == 1:  
-                        file_id = message.document.file_id
-                        await bot.send_document(chat_id=log_channel_id, document=file_id, caption=cc1)
-                    count+=1
-                    os.remove(ka)
-                    time.sleep(1)
-                except FloodWait as e:
-                    await m.reply_text(str(e))
-                    time.sleep(e.x)
-                    continue
-            elif ".pdf" in url:
-                try:
-                    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
-                    if "encrypted" in url:
-                        # Handle encrypted PDF URLs differently if needed
-                        async with aiohttp.ClientSession(headers=headers) as session:
-                            async with session.get(url) as response:
-                                if response.status == 200:
-                                    pdf_data = await response.read()
-                                    with open(f"{name}.pdf", 'wb') as f:
-                                        f.write(pdf_data)
-                                    message = await bot.send_document(chat_id=m.chat.id, document=f'{name}.pdf', caption=cc1)
-                                    if accept_logs == 1:
-                                        file_id = message.document.file_id
-                                        await bot.send_document(chat_id=log_channel_id, document=file_id, caption=cc1)
-                                    count += 1
-                                    os.remove(f'{name}.pdf')
-                                else:
-                                    await m.reply_text(f"Failed to download PDF. Status code: {response.status}")
-                    else:
+                        ka = await helper.download(url, name)
+                        copy = await bot.send_document(chat_id=m.chat.id,document=ka, caption=cc1)
+                        count+=1
+                        os.remove(ka)
+                        time.sleep(1)
+                    except FloodWait as e:
+                        await m.reply_text(str(e))
+                        time.sleep(e.x)
+                        continue
+                
+                elif ".pdf" in url:
+                    try:
                         cmd = f'yt-dlp -o "{name}.pdf" "{url}"'
                         download_cmd = f"{cmd} -R 25 --fragment-retries 25"
                         os.system(download_cmd)
-                        
-                        if os.path.exists(f'{name}.pdf'):
-                            new_name = f'{name}.pdf'
-                            os.rename(f'{name}.pdf', new_name)
-                            message = await bot.send_document(chat_id=m.chat.id, document=new_name, caption=cc1)
-                            if accept_logs == 1:
-                                file_id = message.document.file_id
-                                await bot.send_document(chat_id=log_channel_id, document=file_id, caption=cc1)
-                            count += 1
-                            os.remove(new_name)
-                        else:
-                            async with aiohttp.ClientSession(headers=headers) as session:
-                                async with session.get(url) as response:
-                                    if response.status == 200:
-                                        pdf_data = await response.read()
-                                        with open(f"{name}.pdf", 'wb') as f:
-                                            f.write(pdf_data)
-                                        message = await bot.send_document(chat_id=m.chat.id, document=f'{name}.pdf', caption=cc1)
-                                        if accept_logs == 1:
-                                            file_id = message.document.file_id
-                                            await bot.send_document(chat_id=log_channel_id, document=file_id, caption=cc1)
-                                        count += 1
-                                        os.remove(f'{name}.pdf')
-                                    else:
-                                        await m.reply_text(f"Failed to download PDF. Status code: {response.status}")
-                except Exception as e:
-                    await m.reply_text(f"Error: {str(e)}")
-                    time.sleep(e.x)
-                    continue
-            elif any(ext in url for ext in [".mp3", ".wav", ".m4a"]):
-                try:
-                    ext = url.split('.')[-1]
-                    cmd = f'yt-dlp -x --audio-format {ext} -o "{name}.{ext}" "{url}"'
-                    download_cmd = f"{cmd} -R 25 --fragment-retries 25"
-                    os.system(download_cmd)
-                    cc2 = f'**[🎵] Audio_ID : {str(count).zfill(3)}**\n**𝑭𝒊𝒍𝒆 𝑵𝒂𝒎𝒆** : {name1}\n\n**𝑩𝒂𝒕𝒄𝒉 𝑵𝒂𝒎𝒆** : {b_name}\n\n**𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒅 𝑩𝒚 : {CR}**'
-                    await bot.send_document(chat_id=m.chat.id, document=f'{name}.{ext}', caption=cc2)
-                    #if accept_logs == 1:  
-                        #file_id = message.document.file_id
-                        #await bot.send_document(chat_id=log_channel_id, document=file_id, caption=cc2)
-                    count += 1
-                    os.remove(f'{name}.{ext}')
-                except FloodWait as e:
-                    await m.reply_text(str(e))
-                    time.sleep(e.x)
-                    continue
-            elif any(ext in url for ext in [".jpg", ".jpeg", ".png"]):
-                try:
-                    ext = url.split('.')[-1]
-                    cmd = f'yt-dlp -x --audio-format {ext} -o "{name}.{ext}" "{url}"'
-                    download_cmd = f"{cmd} -R 25 --fragment-retries 25"
-                    os.system(download_cmd)
-                    cc2 = f'**[🎵] Audio_ID : {str(count).zfill(3)}**\n**𝑭𝒊𝒍𝒆 𝑵𝒂𝒎𝒆** : {name1}\n\n**𝑩𝒂𝒕𝒄𝒉 𝑵𝒂𝒎𝒆** : {b_name}\n\n**𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒅 𝑩𝒚 : {CR}**'
-                    await bot.send_document(chat_id=m.chat.id, document=f'{name}.{ext}', caption=cc2)
-                    #if accept_logs == 1:  
-                        #file_id = message.document.file_id
-                        #await bot.send_document(chat_id=log_channel_id, document=file_id, caption=cc2)
-                    count += 1
-                    os.remove(f'{name}.{ext}')
-                except FloodWait as e:
-                    await m.reply_text(str(e))
-                    time.sleep(e.x)
-                    continue
-            elif any(ext in url for ext in [".jpg", ".jpeg", ".png"]):
-                try:
-                    ext = url.split('.')[-1]
-                    cmd = f'yt-dlp -o "{name}.{ext}" "{url}"'
-                    download_cmd = f"{cmd} -R 25 --fragment-retries 25"
-                    os.system(download_cmd)
-                    cc3 = f'**[🖼️] Image_ID : {str(count).zfill(3)}**\n**𝑭𝒊𝒍𝒆 𝑵𝒂𝒎𝒆** : {name1}\n**𝑩𝒂𝒕𝒄𝒉 𝑵𝒂𝒎𝒆** : {b_name}\n\n**𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒅 𝑩𝒚 : {CR}**'
-                    message = await bot.send_document(chat_id=m.chat.id, document=f'{name}.{ext}', caption=cc3)
-                    if accept_logs == 1:  
-                        file_id = message.document.file_id
-                        await bot.send_document(chat_id=log_channel_id, document=file_id, caption=cc3)
-                    count += 1
-                    os.remove(f'{name}.{ext}')
-                except FloodWait as e:
-                    await m.reply_text(str(e))
-                    time.sleep(e.x)
-                    continue
+                        copy = await bot.send_document(chat_id=m.chat.id, document=f'{name}.pdf', caption=cc1)
+                        count += 1
+                        os.remove(f'{name}.pdf')
+                    except FloodWait as e:
+                        await m.reply_text(str(e))
+                        time.sleep(e.x)
+                        continue
                 else:
                     Show = f"❊⟱ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 ⟱❊ »\n\n📝 𝐍𝐚𝐦𝐞 » `{name}\n⌨ 𝐐𝐮𝐥𝐢𝐭𝐲 » {raw_text2}`\n\n**🔗 𝐔𝐑𝐋 »** `{url}`"
                     prog = await m.reply_text(Show)
                     res_file = await helper.download_video(url, cmd, name)
-                filename = res_file
-                await prog.delete(True)
-                await helper.send_video_normal(bot, m, cc, filename, thumb, name, prog)
-                count += 1
-                time.sleep(1)
-                
-            
-        except Exception as e:
-            await m.reply_text(
+                    filename = res_file
+                    await prog.delete(True)
+                    await helper.send_vid(bot, m, cc, filename, thumb, name, prog)
+                    count += 1
+                    time.sleep(1)
+
+            except Exception as e:
+                await m.reply_text(
                     f"⌘ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝐈𝐧𝐭𝐞𝐫𝐮𝐩𝐭𝐞𝐝\n{str(e)}\n⌘ 𝐍𝐚𝐦𝐞 » {name}\n⌘ 𝐋𝐢𝐧𝐤 » `{url}`"
                 )
                 continue
-            
-            
-except Exception as e:
+
+    except Exception as e:
         await m.reply_text(e)
     await m.reply_text("🚦𝐃𝐎𝐍𝐄🚦")
 
