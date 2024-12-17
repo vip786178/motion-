@@ -884,60 +884,16 @@ try:
                     if accept_logs == 1:
                         await helper.send_vid(bot, m, url, cc, filename, thumb, name, log_channel_id) 
                     else:
-                        await helper.send_video_normal(bot, m, url, cc, filename, thumb, name)
-                count += 1
-                
-        except Exception as e:
-            logging.error(e)
-            if "pw.jarviss.workers" in url and "mpd" in url:
-                await m.reply_text(
-                f"**❌ Download Failed! (PW DRM) ❌**\n\n"
-                f"**🎬 Name » ** `{name}`\n"
-                f"**🔍 Quality » ** `{raw_text2}`\n"
-                f"**🌐 URL » ** `{url}`\n\n"
-                f"Please check the URL and try again. 🔄\n\n"
-                f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-                )
-            elif "cpvod" in url:
-                await m.reply_text(
-                f"**❌ Download Failed! (CPVOD DRM) ❌**\n\n"
-                f"**🎬 Name » ** `{name}`\n"
-                f"**🔍 Quality » ** `{raw_text2}`\n"
-                f"**🌐 URL » ** `{url}`\n\n"
-                f"Please check the URL and try again. 🔄\n\n"
-                f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-            )
-            elif "vdocipher" in url:
-                await m.reply_text(
-                f"**❌ Download Failed! (VDOCIPHER DRM) ❌**\n\n"
-                f"**🎬 Name » ** `{name}`\n"
-                f"**🔍 Quality » ** `{raw_text2}`\n"
-                f"**🌐 URL » ** `{url}`\n\n"
-                f"Please check the URL and try again. 🔄\n\n"
-                f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-            )
-            elif "vimeo" in url:
-                await m.reply_text(
-                f"**❌ Download Failed! (VIMEO DRM) ❌**\n\n"
-                f"**🎬 Name » ** `{name}`\n"
-                f"**🔍 Quality » ** `{raw_text2}`\n"
-                f"**🌐 URL » ** `{url}`\n\n"
-                f"Please check the URL and try again. 🔄\n\n"
-                f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-            )
-            else:
-                await m.reply_text(
-                f"**❌ Download Failed! ❌**\n\n"
-                f"**🎬 Name » ** `{name}`\n"
-                f"**🔍 Quality » ** `{raw_text2}`\n"
-                f"**🌐 URL » ** `{url}`\n\n"
-                f"Please check the URL and try again. 🔄\n\n"
-                f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-            )
-            time.sleep(3)
-            count += 1
-            continue
+                        await helper.send_vid(bot, m, cc, filename, thumb, name, prog)
+                    count += 1
+                    time.sleep(1)
 
+            except Exception as e:
+                await m.reply_text(
+                    f"⌘ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝐈𝐧𝐭𝐞𝐫𝐮𝐩𝐭𝐞𝐝\n{str(e)}\n⌘ 𝐍𝐚𝐦𝐞 » {name}\n⌘ 𝐋𝐢𝐧𝐤 » `{url}`"
+                )
+                continue
+            
     bot_running = False
     start_time = None
     await m.reply_text(f"{end_message}")
