@@ -1,7 +1,4 @@
 import os
-import re
-import sys
-import json
 import time
 import datetime
 import aiohttp
@@ -12,17 +9,13 @@ import requests
 import tgcrypto
 import subprocess
 import concurrent.futures
-from subprocess import getstatusoutput
+
+from utils import progress_bar
+
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from utils import progress_bar
-import subprocess
-from math import ceil
-from pytube import Playlist  #Youtube Playlist Extractor
-from yt_dlp import YoutubeDL
 
 
-failed_counter = 0
 
 def duration(filename):
     result = subprocess.run(["ffprobe", "-v", "error", "-show_entries",
@@ -40,7 +33,7 @@ def exec(cmd):
         #err = process.stdout.decode()
 def pull_run(work, cmds):
     with concurrent.futures.ThreadPoolExecutor(max_workers=work) as executor:
-        print("**__Waiting for tasks to complete__**")
+        print("Waiting for tasks to complete")
         fut = executor.map(exec,cmds)
 async def aio(url,name):
     k = f'{name}.pdf'
@@ -157,91 +150,6 @@ def time_name():
     current_time = now.strftime("%H%M%S")
     return f"{date} {current_time}.mp4"
 
-#======================== YOUTUBE EXTRACTOR =====================
-
-def get_playlist_videos(playlist_url):
-    try:
-        # Create a Playlist object
-        playlist = Playlist(playlist_url)
-        
-        # Get the playlist title
-        playlist_title = playlist.title
-        
-        # Initialize an empty dictionary to store video names and links
-        videos = {}
-        
-        # Iterate through the videos in the playlist
-        for video in playlist.videos:
-            try:
-                video_title = video.title
-                video_url = video.watch_url
-                videos[video_title] = video_url
-            except Exception as e:
-                logging.error(f"Could not retrieve video details: {e}")
-        
-        return playlist_title, videos
-    except Exception as e:
-        logging.error(f"An error occurred: {e}")
-        return None, None
-
-def get_all_videos(channel_url):
-    ydl_opts = {
-        'quiet': True,
-        'extract_flat': True,
-        'skip_download': True
-    }
-
-    all_videos = []
-    with YoutubeDL(ydl_opts) as ydl:
-        result = ydl.extract_info(channel_url, download=False)
-        
-        if 'entries' in result:
-            channel_name = result['title']
-            all_videos.extend(result['entries'])
-            
-            while 'entries' in result and '_next' in result:
-                next_page_url = result['_next']
-                result = ydl.extract_info(next_page_url, download=False)
-                all_videos.extend(result['entries'])
-            
-            video_links = {index+1: (video['title'], video['url']) for index, video in enumerate(all_videos)}
-            return video_links, channel_name
-        else:
-            return None, None
-
-def save_to_file(video_links, channel_name):
-    # Sanitize the channel name to be a valid filename
-    sanitized_channel_name = re.sub(r'[^\w\s-]', '', channel_name).strip().replace(' ', '_')
-    filename = f"{sanitized_channel_name}.txt"    
-    with open(filename, 'w', encoding='utf-8') as file:
-        for number, (title, url) in video_links.items():
-            # Ensure the URL is formatted correctly
-            if url.startswith("https://"):
-                formatted_url = url
-            elif "shorts" in url:
-                formatted_url = f"https://www.youtube.com{url}"
-            else:
-                formatted_url = f"https://www.youtube.com/watch?v={url}"
-            file.write(f"{number}. {title}: {formatted_url}\n")
-    return filename
-
-
-#============================= Multiple retries ==================
-async def download_video(url, cmd, name):
-    download_cmd = f'{cmd} -R 25 --fragment-retries 25 --external-downloader aria2c --downloader-args "aria2c: -x 16 -j 32"'
-    global failed_counter
-    print(download_cmd)
-    logging.info(download_cmd)
-    k = subprocess.run(download_cmd, shell=True)
-    
-    # Check if the URL is of type 'visionias' or 'penpencilvod'
-    if "visionias" in cmd:
-        return await download_visionias(url, cmd, name)
-    elif "penpencilvod" in cmd:
-        return await download_penpencilvod(url, cmd, name)
-    else:
-        # Default handling for other types of URLs
-        return await default_download(url, cmd, name)
 
 async def download_video(url,cmd, name):
     download_cmd = f'{cmd} -R 25 --fragment-retries 25 --external-downloader aria2c --downloader-args "aria2c: -x 16 -j 32"'
