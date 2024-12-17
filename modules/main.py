@@ -828,54 +828,8 @@ try:
                     continue
                     
               else:
-                elif 'penpencil' in url:
-                    prog = await m.reply_text(
-                        f"**🚧 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃𝐈𝐍𝐆 🚧**\n\n"
-                        f"**🎬 Name » ** `{name}`\n"
-                        f"**🔍 Quality » ** `{raw_text2}`\n\n"
-                        f"**Processing Physics Wallah (PW) videos may take some time. ⏳**\n\n"
-                        f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-                    )
-                elif 'visionias' in url:
-                    prog = await m.reply_text(
-                        f"**🚧 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃𝐈𝐍𝐆 🚧**\n\n"
-                        f"**🎬 Name » ** `{name}`\n"
-                        f"**🔍 Quality » ** `{raw_text2}`\n\n"
-                        f"**Downlaoding Vision IAS videos may take some time. ⏳**\n\n"
-                        f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-                    )
-                elif 'brightcove' in url:
-                    prog = await m.reply_text(
-                        f"**🚧 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃𝐈𝐍𝐆 🚧**\n\n"
-                        f"**🎬 Name » ** `{name}`\n"
-                        f"**🔍 Quality » ** `{raw_text2}`\n\n"
-                        f"**Downlaoding Careerwill (CW) videos may take some time. ⏳**\n\n"
-                        f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-                    )
-                elif 'utkarshapp' in url:
-                    prog = await m.reply_text(
-                        f"**🚧 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃𝐈𝐍𝐆 🚧**\n\n"
-                        f"**🎬 Name » ** `{name}`\n"
-                        f"**🔍 Quality » ** `{raw_text2}`\n\n"
-                        f"**Downlaoding Utkarsh videos may take some time. ⏳**\n\n"
-                        f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-                    )
-                elif 'studyiq' in url:
-                    prog = await m.reply_text(
-                        f"**🚧 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃𝐈𝐍𝐆 🚧**\n\n"
-                        f"**🎬 Name » ** `{name}`\n"
-                        f"**🔍 Quality » ** `{raw_text2}`\n\n"
-                        f"**Downlaoding StudyIQ videos may take some time. ⏳**\n\n"
-                        f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-                    )
-                else:
-                    prog = await m.reply_text(
-                        f"**🚧 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃𝐈𝐍𝐆 🚧**\n\n"
-                        f"**🎬 Name » ** `{name}`\n"
-                        f"**🔍 Quality » ** `{raw_text2}`\n"
-                        f"**🌐 Video Link » ** `{url}`\n\n"
-                        f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-                    )
+                Show = f"❊⟱ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 ⟱❊ »\n\n📝 𝐍𝐚𝐦𝐞 » `{name}\n⌨ 𝐐𝐮𝐥𝐢𝐭𝐲 » {raw_text2}`\n\n**🔗 𝐔𝐑𝐋 »** `{url}`"
+                prog = await m.reply_text(Show)
                 res_file = await helper.download_video(url, cmd, name)
                 filename = res_file
                 await prog.delete(True)
