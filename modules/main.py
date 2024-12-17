@@ -185,7 +185,7 @@ async def txt_handler(bot: Client, m: Message):
                 url = f"https://pw.jarviss.workers.dev?v={vid_id}&quality={raw_text2}"
 
             name1 = links[i][0].replace("\t", "").replace(":", "").replace("/", "").replace("+", "").replace("#", "").replace("|", "").replace("@", "").replace("*", "").replace(".", "").replace("https", "").replace("http", "").strip()
-            name = f'{str(count).zfill(3)}) {name1[:60]} - {my_name}'
+            name = f'{str(count).zfill(3)}) {name1[:60]}'
             
             if "youtu" in url:
                 ytf = f"b[height<={raw_text2}][ext=mp4]/bv[height<={raw_text2}][ext=mp4]+ba[ext=m4a]/b[ext=mp4]"
