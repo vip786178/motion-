@@ -828,7 +828,7 @@ try:
                     continue
                     
               else:
-                if 'penpencil' in url:
+                elif 'penpencil' in url:
                     prog = await m.reply_text(
                         f"**🚧 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃𝐈𝐍𝐆 🚧**\n\n"
                         f"**🎬 Name » ** `{name}`\n"
