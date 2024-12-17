@@ -135,107 +135,6 @@ async def stop_handler(_, message):
     else:
         await message.reply_text("Bot is not running.", True)
 
-
-#==========================  YOUTUBE EXTRACTOR =======================
-
-@bot.on_message(filters.command('youtube') )
-async def run_bot(client: Client, message: Message):
-    await message.delete()
-    editable = await message.reply_text("Enter the YouTube Webpage URL And I will extract it into .txt file: ")
-    input_msg = await client.listen(editable.chat.id)
-    youtube_url = input_msg.text
-    await input_msg.delete()
-    await editable.delete()
-
-    if 'playlist' in youtube_url:
-        playlist_title, videos = get_playlist_videos(youtube_url)
-        
-        if videos:
-            file_name = f'{playlist_title}.txt'
-            with open(file_name, 'w', encoding='utf-8') as file:
-                for title, url in videos.items():
-                    file.write(f'{title}: {url}\n')
-            
-            await message.reply_document(document=file_name, caption="Here Is The Text File Of Your YouTube Playlist")
-            os.remove(file_name)
-        else:
-            await message.reply_text("An error occurred while retrieving the playlist.")
-    else:
-        video_links, channel_name = get_all_videos(youtube_url)
-
-        if video_links:
-            file_name = save_to_file(video_links, channel_name)
-            await message.reply_document(document=file_name, caption="Here Is The Text File Of Your YouTube Playlist")
-            os.remove(file_name)          
-        else:
-            await message.reply_text("No videos found or the URL is incorrect.")
-
-def get_playlist_videos(playlist_url):
-    try:
-        # Create a Playlist object
-        playlist = Playlist(playlist_url)
-        
-        # Get the playlist title
-        playlist_title = playlist.title
-        
-        # Initialize an empty dictionary to store video names and links
-        videos = {}
-        
-        # Iterate through the videos in the playlist
-        for video in playlist.videos:
-            try:
-                video_title = video.title
-                video_url = video.watch_url
-                videos[video_title] = video_url
-            except Exception as e:
-                logging.error(f"Could not retrieve video details: {e}")
-        
-        return playlist_title, videos
-    except Exception as e:
-        logging.error(f"An error occurred: {e}")
-        return None, None
-
-def get_all_videos(channel_url):
-    ydl_opts = {
-        'quiet': True,
-        'extract_flat': True,
-        'skip_download': True
-    }
-
-    all_videos = []
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        result = ydl.extract_info(channel_url, download=False)
-        
-        if 'entries' in result:
-            channel_name = result['title']
-            all_videos.extend(result['entries'])
-            
-            while 'entries' in result and '_next' in result:
-                next_page_url = result['_next']
-                result = ydl.extract_info(next_page_url, download=False)
-                all_videos.extend(result['entries'])
-            
-            video_links = {index+1: (video['title'], video['url']) for index, video in enumerate(all_videos)}
-            return video_links, channel_name
-        else:
-            return None, None
-
-def save_to_file(video_links, channel_name):
-    # Sanitize the channel name to be a valid filename
-    sanitized_channel_name = re.sub(r'[^\w\s-]', '', channel_name).strip().replace(' ', '_')
-    filename = f"{sanitized_channel_name}.txt"    
-    with open(filename, 'w', encoding='utf-8') as file:
-        for number, (title, url) in video_links.items():
-            # Ensure the URL is formatted correctly
-            if url.startswith("https://"):
-                formatted_url = url
-            elif "shorts" in url:
-                formatted_url = f"https://www.youtube.com{url}"
-            else:
-                formatted_url = f"https://www.youtube.com/watch?v={url}"
-            file.write(f"{number}. {title}: {formatted_url}\n")
-    return filename
-
 #================== TEXT FILE EDITOR =============================
 
 @bot.on_message(filters.command('h2t'))
@@ -396,31 +295,11 @@ async def txt_handler(bot: Client, m: Message):
 
             else:
                 cmd = f"yt-dlp --verbose -f '{ytf}' '{url}' -o '{name}.mp4' --no-check-certificate --retry 5 --retries 10 --concurrent-fragments 8"
-
-
-
-#===============================================================
-            if raw_text4 == "YES":
-                # Check the format of the link to extract video name and topic name accordingly
-                if links[i][0].startswith("("):
-                    # Extract the topic name for format: (TOPIC) Video Name:URL
-                    t_name = re.search(r"\((.*?)\)", links[i][0]).group(1).strip().upper()
-                    v_name = re.search(r"\)\s*(.*?):", links[i][0]).group(1).strip()
-                else:
-                    # Extract the topic name for format: Video Name (TOPIC):URL
-                    t_name = re.search(r"\((.*?)\)", links[i][0]).group(1).strip().upper()
-                    v_name = links[i][0].split("(", 1)[0].strip()
-
-                name = f'{name1[:200]}'
-
-                cc = f'⋅ ─  **{t_name}**  ─ ⋅\n\n[🎬] **Video_ID** : {str(count).zfill(3)}\n**𝑽𝒊𝒅𝒆𝒐 𝑵𝒂𝒎𝒆** : {v_name}\n**𝑩𝒂𝒕𝒄𝒉 𝑵𝒂𝒎𝒆**: {b_name}\n\n**𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒅 𝑩𝒚 : {CR}**'
-                cc1 = f'⋅ ─  **{t_name}**  ─ ⋅\n\n[📁] **File ID** : {str(count).zfill(3)}\n**𝑭𝒊𝒍𝒆 𝑵𝒂𝒎𝒆** : {v_name}\n**𝑩𝒂𝒕𝒄𝒉 𝑵𝒂𝒎𝒆** : {b_name}`n\n**𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒅 𝑩𝒚 : {CR}**'
-
-            else:
-                cc = f'**[📹] Video_ID : {str(count).zfill(3)}**\n\n**𝑽𝒊𝒅𝒆𝒐 𝑵𝒂𝒎𝒆** : {name1}\n**𝑩𝒂𝒕𝒄𝒉 𝑵𝒂𝒎𝒆** : {b_name}\n\n**𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒅 𝑩𝒚 : {CR}**'
-                cc1 = f'**[📁] File_ID : {str(count).zfill(3)}**\n\n**𝑭𝒊𝒍𝒆 𝑵𝒂𝒎𝒆** : {name1}\n**𝑩𝒂𝒕𝒄𝒉 𝑵𝒂𝒎𝒆** : {b_name}\n\n**𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒅 𝑩𝒚 : {CR}**'                             
                 
-            if "drive" in url:
+                try:                               
+                cc = f'**[🎞️] Vid_ID :** {str(count).zfill(3)}\n\n**Video Title :** {name1}( @ANKIT_SHAKYA73 ).mkv\n\n**Batch Name :** {b_name}\n\n**Extracted By ➤ {CR}**'
+                cc1 = f'**[📄] Pdf_ID :** {str(count).zfill(3)}\n\n**File Title :** {name1}( @ANKIT_SHAKYA73 ).pdf\n\n**Batch Name :** {b_name}\n\n**Extracted By ➤ {CR}**'
+                if "drive" in url:
                     try:
                         ka = await helper.download(url, name)
                         copy = await bot.send_document(chat_id=m.chat.id,document=ka, caption=cc1)
@@ -444,21 +323,8 @@ async def txt_handler(bot: Client, m: Message):
                         await m.reply_text(str(e))
                         time.sleep(e.x)
                         continue
-                else:
-                    Show = f"❊⟱ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 ⟱❊ »\n\n📝 𝐍𝐚𝐦𝐞 » `{name}\n⌨ 𝐐𝐮𝐥𝐢𝐭𝐲 » {raw_text2}`\n\n**🔗 𝐔𝐑𝐋 »** `{url}`"
-                    prog = await m.reply_text(Show)
-                    res_file = await helper.download_video(url, cmd, name)
-                    filename = res_file
-                    await prog.delete(True)
-                    await helper.send_vid(bot, m, cc, filename, thumb, name, prog)
-                    count += 1
-                    time.sleep(1)
 
-            except Exception as e:
-                await m.reply_text(
-                    f"⌘ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝐈𝐧𝐭𝐞𝐫𝐮𝐩𝐭𝐞𝐝\n{str(e)}\n⌘ 𝐍𝐚𝐦𝐞 » {name}\n⌘ 𝐋𝐢𝐧𝐤 » `{url}`"
-                )
-                continue
+
 
     except Exception as e:
         await m.reply_text(e)
