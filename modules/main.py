@@ -886,8 +886,8 @@ try:
                     else:
                         await helper.send_video_normal(bot, m, url, cc, filename, thumb, name)
                 count += 1
-
-            except Exception as e:
+                
+        except Exception as e:
             logging.error(e)
             if "pw.jarviss.workers" in url and "mpd" in url:
                 await m.reply_text(
@@ -897,8 +897,7 @@ try:
                 f"**🌐 URL » ** `{url}`\n\n"
                 f"Please check the URL and try again. 🔄\n\n"
                 f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-    
-            )
+                )
             elif "cpvod" in url:
                 await m.reply_text(
                 f"**❌ Download Failed! (CPVOD DRM) ❌**\n\n"
