@@ -18,7 +18,6 @@ from pyrogram.types import Message
 from utils import progress_bar
 import subprocess
 from math import ceil
-from PIL import Image
 from pytube import Playlist  #Youtube Playlist Extractor
 from yt_dlp import YoutubeDL
 
@@ -289,7 +288,7 @@ async def default_download(url, cmd, name):
 #------------------Normal handler for the documents-------------------
 
 async def send_doc(bot: Client, m: Message,cc,ka,cc1,count,name):
-    reply = await m.reply_text(f"**Uploading ..🚀..** - `{name}`\n╰────⌈**𝐊𝐔𝐍𝐀𝐋❤️**⌋────╯")
+    reply = await m.reply_text(f"**Uploading ..🚀..** - `{name}`\n╰────⌈**❤️**⌋────╯")
     time.sleep(1)
     await m.reply_document(ka,caption=cc1)
     count+=1
@@ -298,98 +297,52 @@ async def send_doc(bot: Client, m: Message,cc,ka,cc1,count,name):
     os.remove(ka)
     time.sleep(3)
 
-#-----------------Send it to the log channel-----------------------
-async def send_doc(bot: Client, m: Message, cc, ka, cc1, count, name, log_channel_id):
-    reply = await m.reply_text(f"**Uploading ..🚀..** - `{name}`\n╰────⌈**𝐊𝐔𝐍𝐀𝐋❤️**⌋────╯")
+async def download_video(url,cmd, name):
+    download_cmd = f'{cmd} -R 25 --fragment-retries 25 --external-downloader aria2c --downloader-args "aria2c: -x 16 -j 32"'
+    global failed_counter
+    print(download_cmd)
+    logging.info(download_cmd)
+    k = subprocess.run(download_cmd, shell=True)
+    if "visionias" in cmd and k.returncode != 0 and failed_counter <= 10:
+        failed_counter += 1
+        await asyncio.sleep(5)
+        await download_video(url, cmd, name)
+    failed_counter = 0
+    try:
+        if os.path.isfile(name):
+            return name
+        elif os.path.isfile(f"{name}.webm"):
+            return f"{name}.webm"
+        name = name.split(".")[0]
+        if os.path.isfile(f"{name}.mkv"):
+            return f"{name}.mkv"
+        elif os.path.isfile(f"{name}.mp4"):
+            return f"{name}.mp4"
+        elif os.path.isfile(f"{name}.mp4.webm"):
+            return f"{name}.mp4.webm"
+
+        return name
+    except FileNotFoundError as exc:
+        return os.path.isfile.splitext[0] + "." + "mp4"
+
+
+async def send_doc(bot: Client, m: Message,cc,ka,cc1,prog,count,name):
+    reply = await m.reply_text(f"Uploading » `{name}`")
     time.sleep(1)
-    # Upload the document and capture the message
-    message = await m.reply_document(ka, caption=cc1)
-    # Capture the file_id of the uploaded document
-    file_id = message.document.file_id
-    # Send the document to the log channel using file_id
-    await bot.send_document(log_channel_id, file_id, caption=cc1)    
-    # Increment count
-    count += 1
-    # Delete the reply message
-    await reply.delete(True)
-    # Remove the local file
+    start_time = time.time()
+    await m.reply_document(ka,caption=cc1)
+    count+=1
+    await reply.delete (True)
     time.sleep(1)
     os.remove(ka)
-    time.sleep(3)
+    time.sleep(3) 
 
 
-def get_video_attributes(file: str):
-    """Returns video duration, width, height"""
-
-    class FFprobeAttributesError(Exception):
-        """Exception if ffmpeg fails to generate attributes"""
-
-    cmd = (
-        "ffprobe -v error -show_entries format=duration "
-        + "-of default=noprint_wrappers=1:nokey=1 "
-        + "-select_streams v:0 -show_entries stream=width,height "
-        + f" -of default=nw=1:nk=1 '{file}'"
-    )
-    res, out = getstatusoutput(cmd)
-    if res != 0:
-        raise FFprobeAttributesError(out)
-    width, height, dur = out.split("\n")
-    return (int(float(dur)), int(width), int(height))
-
-#================= Spliting According to File Size ==================
-
-def duration(filename):
-    result = subprocess.run(f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{filename}"', 
-                            shell=True, 
-                            capture_output=True, 
-                            text=True)
-    return float(result.stdout.strip())
-
-def duration(part):
-    result = subprocess.run(f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{part}"', 
-                            shell=True, 
-                            capture_output=True, 
-                            text=True)
-    return float(result.stdout.strip())
-
-def split_video(filename, max_size):
-    parts = []
-    part_prefix = filename.split('.')[0]  # Get the filename without extension
-
-    # Calculate the total duration of the video
-    total_duration = duration(filename)
+async def send_vid(bot: Client, m: Message,cc,filename,thumb,name,prog):
     
-    # Estimate the duration of each segment to be under the max_size
-    file_size = os.path.getsize(filename)
-    segment_duration = ceil((total_duration * max_size) / file_size)
-    
-    # Command to split the video, using MKV container
-    split_command = f'ffmpeg -y -i "{filename}" -c copy -map 0 -segment_time {segment_duration} -f segment "{part_prefix}_part_%03d.mkv"'
-    subprocess.run(split_command, shell=True)
-    
-    for part in os.listdir():
-        if part.startswith(part_prefix) and part.endswith('.mkv'):
-            parts.append(part)
-    
-    return parts
-
-
-#-----------------------Emoji handler------------------------------------
-
-EMOJIS = ["🦁", "🐶", "🐼", "🐱", "👻", "🐻‍❄️", "☁️", "🚹", "🚺", "🐠", "🦋"]
-emoji_counter = 0  # Initialize a global counter
-
-def get_next_emoji():
-    global emoji_counter
-    emoji = EMOJIS[emoji_counter]
-    emoji_counter = (emoji_counter + 1) % len(EMOJIS)
-    return emoji
-
-async def send_video_normal(bot: Client, m: Message, url, cc, filename, thumb, name):
-    emoji = get_next_emoji()
-    subprocess.run(f'ffmpeg -y -i "{filename}" -ss 00:00:12 -vframes 1 "{filename}.jpg"', shell=True)
+    subprocess.run(f'ffmpeg -i "{filename}" -ss 00:00:12 -vframes 1 "{filename}.jpg"', shell=True)
     await prog.delete (True)
-    reply = await m.reply_text(f"**⥣ Uploading ...** » `{name}`")
+    reply = await m.reply_text(f"**⥣ Uploading...** » `{name}`")
     try:
         if thumb == "no":
             thumbnail = f"{filename}.jpg"
@@ -401,125 +354,14 @@ async def send_video_normal(bot: Client, m: Message, url, cc, filename, thumb, n
     dur = int(duration(filename))
 
     start_time = time.time()
-    
-        
-    try:
-        if thumb == "no":
-            thumbnail = f"{filename}.jpg"
-        else:
-            thumbnail = thumb
-    except Exception as e:
-        await m.reply_text(str(e))
-
-    dur = int(duration(filename))
-    processing_msg = await m.reply_text(emoji)
-    
-    # Check if the file size exceeds 1.8GB
-    max_size = 1.8 * 1024 * 1024 * 1024  # 1.8GB in bytes
-    file_size = os.path.getsize(filename)
-    
-    if file_size > max_size:
-        # Notify user that the video is being split
-        splitting_msg = await m.reply_text("🛠 **Splitting video into parts**...\n\n╰────⌈**𝐊𝐔𝐍𝐀𝐋❤️(@ikunalx)**⌋────╯\n")
-        
-        # Split the video into parts
-        parts = split_video(filename, max_size)
-        parts.sort(key=lambda x: int(x.split('_')[-1].split('.')[0]))  # Sort by part number
-        
-        # Upload each part
-        for i, part in enumerate(parts):
-            part_dur = int(duration(part))
-            await splitting_msg.edit_text(f"📤 **𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆** Part {i + 1} of {len(parts)}...\n\n╰────⌈**𝐊𝐔𝐍𝐀𝐋❤️(@ikunalx)**⌋────╯\n")
-            try:
-                part_caption = f"⋅ ⋅ ─ ─ **Part {i + 1}** ─ ─ ⋅ ⋅ \n{cc}"
-                await m.reply_video(part, caption=part_caption, supports_streaming=True, height=720, width=1280, thumb=thumbnail, duration=part_dur)
-            except Exception:
-                await m.reply_document(part, caption=part_caption)
-            os.remove(part)
-            await asyncio.sleep(3)
-        
-        # Delete the splitting message after all parts are uploaded
-        await splitting_msg.delete()
-    else:
-        try:
-            await m.reply_video(filename, caption=cc, supports_streaming=True, height=720, width=1280, thumb=thumbnail, duration=dur)
-        except Exception:
-            await m.reply_document(filename, caption=cc)
-    
-    await processing_msg.delete(True)
-    await reply.delete(True)
-    os.remove(f"{filename}.jpg")
-    os.remove(filename)
-
-#------------- LOG CHANNEL HANDLER -------------------------
-
-async def send_vid(bot: Client, m: Message, url, cc, filename, thumb, name, log_channel_id):
-    emoji = get_next_emoji()
-    subprocess.run(f'ffmpeg -y -i "{filename}" -ss 00:00:12 -vframes 1 "{filename}.jpg"', shell=True)
-    if 'pw.jarviss.workers' in url:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 Name » ** `{name}`\n"
-            f"**⏳Processing Physics Wallah (PW) videos may take some time.**\n\n"
-            f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-        )
-    elif 'visionias' in url:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 Name » ** `{name}`\n"
-            f"**⏳Uploading Vision IAS videos may take some time.**\n\n"
-            f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-        )
-    elif 'brightcove' in url:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 Name » ** `{name}`\n"
-            f"**⏳Uploading Careerwill (CW) videos may take some time.**\n\n"
-            f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-        )
-    elif 'utkarshapp' in url:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 Name » ** `{name}`\n"
-            f"**⏳Uploading Utkarsh videos may take some time.**\n\n"
-            f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-        )
-    elif 'studyiq' in url:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 Name » ** `{name}`\n"
-        )
-
-else:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 Name » ** `{name}`\n"
-            f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-        )    
-    try:
-        if thumb == "no":
-            thumb_cmd = f'ffmpeg -y -i "{filename}_temp.mp4" -ss 00:00:01 -vframes 1 "{filename}_thumb.jpg"'
-            subprocess.run(thumb_cmd, shell=True)
-            thumbnail = f"{filename}_thumb.jpg"
-        else:
-            thumbnail = thumb
-    except Exception as e:
-        await m.reply_text(str(e))
-
-    # Extract duration of the video
-    video_duration = duration(filename)
-    dur = int(video_duration)
-
-    # Displaying a temporary message while processing
-    processing_msg = await m.reply_text(emoji)
 
     try:
-        await m.reply_video(f"{filename}_temp.mp4", caption=cc, supports_streaming=True, height=720, width=1280, thumb=thumbnail, duration=dur)
+        await m.reply_video(filename,caption=cc, supports_streaming=True,height=720,width=1280,thumb=thumbnail,duration=dur, progress=progress_bar,progress_args=(reply,start_time))
     except Exception:
-        await m.reply_document({filename}, caption=cc)
-    await processing_msg.delete (True)
-    await reply.delete(True)
-    # Clean up temporary files
-    os.remove(f"{filename}.jpg")
-    os.remove(f"{filename}_temp.mp4")
+        await m.reply_document(filename,caption=cc, progress=progress_bar,progress_args=(reply,start_time))
+
+    
     os.remove(filename)
+
+    os.remove(f"{filename}.jpg")
+    await reply.delete (True)
