@@ -829,13 +829,13 @@ try:
                 else:
                     Show = f"❊⟱ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 ⟱❊ »\n\n📝 𝐍𝐚𝐦𝐞 » `{name}\n⌨ 𝐐𝐮𝐥𝐢𝐭𝐲 » {raw_text2}`\n\n**🔗 𝐔𝐑𝐋 »** `{url}`"
                     prog = await m.reply_text(Show)
-                res_file = await helper.download_video(url, cmd, name)
+                    res_file = await helper.download_video(url, cmd, name)
                 filename = res_file
                 await prog.delete(True)
-                await prog.delete(True)
-                    await helper.send_vid(bot, m, cc, filename, thumb, name, prog)
+                await helper.send_video_normal(bot, m, cc, filename, thumb, name, prog)
                     count += 1
                     time.sleep(1)
+                
             
         except Exception as e:
             logging.error(e)
