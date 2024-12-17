@@ -388,82 +388,21 @@ def get_next_emoji():
 async def send_video_normal(bot: Client, m: Message, url, cc, filename, thumb, name):
     emoji = get_next_emoji()
     subprocess.run(f'ffmpeg -y -i "{filename}" -ss 00:00:12 -vframes 1 "{filename}.jpg"', shell=True)
-    if 'pw.jarviss.workers' in url:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 𝐍𝐚𝐦𝐞 » ** `{name}`\n\n"
-            f"**⏳Processing Physics Wallah (PW) videos may take some time.**\n\n"
-            f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-        )
-    elif 'rgvikramjeet-data' in url and 'appx-transcoded' in url:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 𝐍𝐚𝐦𝐞 » ** `{name}`\n\n"
-            f"**⏳Uploading RG Vikramjeet videos may take some time.**\n\n"
-            f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-        )
-    elif 'parmaracademy-data' in url and 'appx-transcoded' in url:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 𝐍𝐚𝐦𝐞 » ** `{name}`\n\n"
-            f"**⏳Uploading Parmar Academy videos may take some time.**\n\n"
-            f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-        )
-    elif 'uclive-data' in url and 'appx-transcoded' in url:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 𝐍𝐚𝐦𝐞 » ** `{name}`\n\n"
-            f"**⏳Uploading UC Live videos may take some time.**\n\n"
-            f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-        )
-    elif 'visionias' in url:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 𝐍𝐚𝐦𝐞 » ** `{name}`\n\n"
-            f"**⏳Uploading Vision IAS videos may take some time.**\n\n"
-            f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-        )
-    elif 'brightcove' in url:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 𝐍𝐚𝐦𝐞 » ** `{name}`\n\n"
-            f"**⏳Uploading Careerwill (CW) videos may take some time.**\n\n"
-            f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-        )
-    elif 'utkarshapp' in url:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 𝐍𝐚𝐦𝐞 » ** `{name}`\n\n"
-            f"**⏳Uploading Utkarsh videos may take some time.**\n\n"
-            f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-        )
-    elif 'studyiq' in url:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 𝐍𝐚𝐦𝐞 » ** `{name}`\n\n"
-            f"**⏳Uploading StudyIQ videos may take some time.**\n\n"
-            f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-        )
-    elif 'kgs-v2.akamaized.net' in url:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 𝐍𝐚𝐦𝐞 » ** `{name}`\n\n"
-            f"**⏳Uploading Khan Sir videos may take some time.**\n\n"
-            f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-        )
-    elif 'videos.classplusapp.com' in url:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 𝐍𝐚𝐦𝐞 » ** `{name}`\n\n"
-            f"**⏳Uploading ClassPlus videos may take some time.**\n\n"
-            f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-        )
-    else:
-        reply = await m.reply_text(
-            f"**🚀 𝐔𝐏𝐋𝐎𝐀𝐃𝐈𝐍𝐆!** 🚀\n\n"
-            f"**🎬 𝐍𝐚𝐦𝐞 » ** `{name}`\n\n"
-            f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
-        )  
+    await prog.delete (True)
+    reply = await m.reply_text(f"**⥣ Uploading ...** » `{name}`")
+    try:
+        if thumb == "no":
+            thumbnail = f"{filename}.jpg"
+        else:
+            thumbnail = thumb
+    except Exception as e:
+        await m.reply_text(str(e))
+
+    dur = int(duration(filename))
+
+    start_time = time.time()
+    
+        
     try:
         if thumb == "no":
             thumbnail = f"{filename}.jpg"
