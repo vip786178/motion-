@@ -68,9 +68,55 @@ async def main():
     except (KeyboardInterrupt, SystemExit):
         await stop_bot()
         
-@bot.on_message(filters.command(["start"]) )
-async def account_login(bot: Client, m: Message):
-    editable = await m.reply_text(f"**Hi 👋 Sir.. How are you ?**\n**Bot Made BY 𝐀𝐍𝐊𝐈𝐓 𝐒𝐇𝐀𝐊𝐘𝐀™👨🏻‍💻**")
+class Data:
+    START = (
+        "🌟 Welcome {0}! 🌟\n\n"
+    )
+# Define the start command handler
+@bot.on_message(filters.command("start"))
+async def start(client: Client, msg: Message):
+    user = await client.get_me()
+    mention = user.mention
+    start_message = await client.send_message(
+        msg.chat.id,
+        Data.START.format(msg.from_user.mention)
+    )
+
+    await asyncio.sleep(1)
+    await start_message.edit_text(
+        Data.START.format(msg.from_user.mention) +
+        "Initializing Uploader bot... 🤖\n\n"
+        "Progress: [⬜⬜⬜⬜⬜⬜⬜⬜⬜] 0%\n\n"
+    )
+
+    await asyncio.sleep(1)
+    await start_message.edit_text(
+        Data.START.format(msg.from_user.mention) +
+        "Loading features... ⏳\n\n"
+        "Progress: [🟥🟥🟥⬜⬜⬜⬜⬜⬜] 25%\n\n"
+    )
+    
+    await asyncio.sleep(1)
+    await start_message.edit_text(
+        Data.START.format(msg.from_user.mention) +
+        "This may take a moment, sit back and relax! 😊\n\n"
+        "Progress: [🟧🟧🟧🟧🟧⬜⬜⬜⬜] 50%\n\n"
+    )
+
+    await asyncio.sleep(1)
+    await start_message.edit_text(
+        Data.START.format(msg.from_user.mention) +
+        "Checking subscription status... 🔍\n\n"
+        "Progress: [🟨🟨🟨🟨🟨🟨🟨⬜⬜] 75%\n\n"
+    )
+
+    await asyncio.sleep(1)
+    if msg.from_user.id in authorized_users:
+        await start_message.edit_text(
+            Data.START.format(msg.from_user.mention) +
+            "Great!, You are a premium member! 🌟 press `/help` in order to use me properly\n\n",
+            reply_markup=help_button_keyboard
+    )
 
 @bot.on_message(filters.command(["stop"]) )
 async def restart_handler(_, m):
