@@ -833,18 +833,10 @@ try:
                 res_file = await helper.download_video(url, cmd, name)
                 filename = res_file
                 await prog.delete(True)
-                if overlay is not None: 
-                    await helper.send_video_watermark(bot, m, url, cc, filename, thumb, name, overlay)
-                else:
-                    if accept_logs == 1:
-                        await helper.send_vid(bot, m, url, cc, filename, thumb, name, log_channel_id) 
-                    else:
-                        await helper.send_video_normal(bot, m, url, cc, filename, thumb, name)
-                count += 1
-
-            elapsed_time = time.time() - start_time
-            total_running_time = save_bot_running_time(collection, elapsed_time)
-            start_time = None
+                await prog.delete(True)
+                    await helper.send_vid(bot, m, cc, filename, thumb, name, prog)
+                    count += 1
+                    time.sleep(1)
             
         except Exception as e:
             logging.error(e)
