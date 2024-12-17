@@ -887,10 +887,7 @@ try:
                         await helper.send_video_normal(bot, m, url, cc, filename, thumb, name)
                 count += 1
 
-            elapsed_time = time.time() - start_time
-            total_running_time = save_bot_running_time(collection, elapsed_time)
-            start_time = None
-    except Exception as e:
+            except Exception as e:
             logging.error(e)
             if "pw.jarviss.workers" in url and "mpd" in url:
                 await m.reply_text(
@@ -900,6 +897,7 @@ try:
                 f"**🌐 URL » ** `{url}`\n\n"
                 f"Please check the URL and try again. 🔄\n\n"
                 f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
+    
             )
             elif "cpvod" in url:
                 await m.reply_text(
