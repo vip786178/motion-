@@ -263,384 +263,93 @@ async def run_bot(bot: Client, m: Message):
         await m.reply_document(document=txt_file,caption="Here is your txt file.")
         os.remove(txt_file)
 
-@bot.on_message(filters.command('remtitle'))
-async def run_bot(bot: Client, m: Message):
-      editable = await m.reply_text("**Send Your TXT file with links**\n")
-      input: Message = await bot.listen(editable.chat.id)
-      txt_file = await input.download()
-      await input.delete(True)
-      await editable.delete()
-      
-      with open(txt_file, 'r') as f:
-          lines = f.readlines()
-      
-      cleaned_lines = [line.replace('(', '').replace(')', '') for line in lines]
-      
-      cleaned_txt_file = os.path.splitext(txt_file)[0] + '_cleaned.txt'
-      with open(cleaned_txt_file, 'w') as f:
-          f.write(''.join(cleaned_lines))
-      
-      await m.reply_document(document=cleaned_txt_file,caption="Here is your cleaned txt file.")
-      os.remove(cleaned_txt_file)
-
-def process_links(links):
-    processed_links = []
-    
-    for link in links.splitlines():
-        if "m3u8" in link:
-            processed_links.append(link)
-        elif "mpd" in link:
-            # Remove everything after and including '*'
-            processed_links.append(re.sub(r'\*.*', '', link))
-    
-    return "\n".join(processed_links)
-@bot.on_message(filters.command('studyiqeditor'))
-async def run_bot(bot: Client, m: Message):
-    editable = await m.reply_text("**Send Your TXT file with links**\n")
-    input: Message = await bot.listen(editable.chat.id)
-    txt_file = await input.download()
-    await input.delete(True)
-    await editable.delete()
-    
-    with open(txt_file, 'r') as f:
-        content = f.read()
-    
-    processed_content = process_links(content)
-    
-    processed_txt_file = os.path.splitext(txt_file)[0] + '_processed.txt'
-    with open(processed_txt_file, 'w') as f:
-        f.write(processed_content)
-    
-    await m.reply_document(document=processed_txt_file, caption="Here is your processed txt file.")
-    os.remove(processed_txt_file)   
-
 #=================== TXT CALLING COMMAND ==========================
 
-@bot.on_message(filters.command(["txt"]))
-async def luminant_command(bot: Client, m: Message):
-    global bot_running, start_time, total_running_time, max_running_time
-    global log_channel_id, my_name, overlay, accept_logs
-    await m.delete()
-    # Store the chat ID where the command was initiated
-    chat_id = m.chat.id
-    if bot_running:
-        # If the process is already running, ask the user if they want to queue their request
-        running_message = await m.reply_text("⚙️ Process is already running. Do you want to queue your request? (yes/no)")
-
-        # Listen for user's response
-        input_queue: Message = await bot.listen(chat_id)
-        response = input_queue.text.strip().lower()
-        await input_queue.delete()
-        await running_message.delete()
-
-        if response != "yes":
-            # If user doesn't want to queue, return without further action
-            await m.reply_text("Process not queued. Exiting command.")
-            return
-
-    editable = await m.reply_text("📄 Send Your **.txt** file.")
+@bot.on_message(filters.command(["ankt","upload"]) )
+async def txt_handler(bot: Client, m: Message):
+    editable = await m.reply_text(f"**🔹Hi I am Poweful TXT Downloader📥 Bot.**\n🔹**Send me the TXT file and wait.**")
     input: Message = await bot.listen(editable.chat.id)
-    if input.document:
-        x = await input.download()        
-        await bot.send_document(log_channel_id, x)                    
-        await input.delete(True)
-        file_name, ext = os.path.splitext(os.path.basename(x))
-        credit = my_name
-
-        path = f"./downloads/{m.chat.id}"
-
-        try:
-            with open(x, "r") as f:
-                content = f.read()
-            content = content.split("\n")
-            links = []
-            for i in content:
-                links.append(i.split("://", 1))
-            os.remove(x)
-        except:
-            await m.reply_text("Invalid file input.🥲")
-            os.remove(x)
-            bot_running = False  # Set bot_running to False for invalid file input
-            return
-    else:
-        content = input.text
+    x = await input.download()
+    await input.delete(True)
+    file_name, ext = os.path.splitext(os.path.basename(x))
+    credit = f"𝐀𝐧𝐤𝐢𝐭 𝐒𝐡𝐚𝐤𝐲𝐚™🇮🇳"
+    try:    
+        with open(x, "r") as f:
+            content = f.read()
         content = content.split("\n")
         links = []
         for i in content:
             links.append(i.split("://", 1))
-
-    #===================== IF ELSE ========================
-
-    await editable.edit(f"🔍 **Do you want to set all values as Default?\nIf YES then type `df` otherwise `no`** ✨")
-    input5: Message = await bot.listen(chat_id)
-    raw_text5 = input5.text
-    await input5.delete(True)
-
-
-#===============================================================
-    if raw_text5 == "df":
-        await editable.edit("**📝 Enter the Batch Name or type `df` to use the text filename:**")
-        input1 = await bot.listen(chat_id)
-        raw_text0 = input1.text
-        await input1.delete(True)
-        if raw_text0 == 'df':
-            try:
-                b_name = file_name.replace('_', ' ')
-            except Exception as e:
-                print(f"Error: {e}")
-                b_name = "I Don't Know"
-        else:
-            b_name = raw_text0
-            
-        raw_text = "1"
-        raw_text2 = "720"
-        res = "1280x720"
-        CR = '🌹🌹🌹'
-        raw_text4 = "df"
-        thumb = "no"
-      
-        await editable.delete()  # Ensure the prompt message is deleted
+        os.remove(x)
+    except:
+        await m.reply_text("Invalid file input.")
+        os.remove(x)
+        return
+   
+    await editable.edit(f"Total links found are **{len(links)}**\n\nSend From where you want to download initial is **1**")
+    input0: Message = await bot.listen(editable.chat.id)
+    raw_text = input0.text
+    await input0.delete(True)
+    try:
+        arg = int(raw_text)
+    except:
+        arg = 1
+    await editable.edit("**Enter Your Batch Name or send d for grabing from text filename.**")
+    input1: Message = await bot.listen(editable.chat.id)
+    raw_text0 = input1.text
+    await input1.delete(True)
+    if raw_text0 == 'd':
+        b_name = file_name
     else:
+        b_name = raw_text0
 
-
-    #===================== Batch Name =====================
-
-        await editable.edit(f"Total links found are **{len(links)}**\n\nSend From where you want to download initial is **1**")
-        input0: Message = await bot.listen(chat_id)
-        raw_text = input0.text.strip()
-        await input0.delete(True)
-
-        await editable.edit("**Enter Batch Name or send df for grabbing it from text filename.**")
-        input1: Message = await bot.listen(editable.chat.id)
-        raw_text0 = input1.text
-        await input1.delete(True)
-        if raw_text0 == 'df':
-            try:
-                b_name = file_name
-            except Exception as e:
-                print(f"Error: {e}")
-                b_name = "I Don't Know"
-        else:
-            b_name = raw_text0
-
-    #===================== Title Name =====================
-
-        await editable.edit(f"🔍 **Do you want to enable the Title Feature? Reply with `YES` or `df`** ✨")
-        input4: Message = await bot.listen(chat_id)
-        raw_text4 = input4.text
-        await input4.delete(True)
-
-    #===================== QUALITY =================================
-        await editable.edit("**Enter resolution:**\n\n144\n240\n360\n480\n720\n1080\n1440\n2160\n4320\n\n**Please Choose Quality**\n\nor Send `df` for default Quality\n\n")
-        input2: Message = await bot.listen(chat_id)
-        if input2.text.lower() == "df": # Check if the input is "df" (case-insensitive)
-            raw_text2 = "720"
-        else:
-            raw_text2 = input2.text
-        await input2.delete(True)
-        try:
-            if raw_text2 == "144":
-                res = "1280x720"
-            elif raw_text2 == "240":
-                res = "426x240"
-            elif raw_text2 == "360":
-                res = "640x360"
-            elif raw_text2 == "480":
-                res = "854x480"
-            elif raw_text2 == "720":
-                res = "1280x720"
-            elif raw_text2 == "1080":
-                res = "1920x1080" 
-            elif raw_text2 == "1440":
-                res = "2560x1440"
-            elif raw_text2 == "2160":
-                res = "3840x2160"
-            elif raw_text2 == "4320":
-                res = "7680x4320"
-            else: 
-                res = "854x480"
-        except Exception:
+    await editable.edit("**Enter resolution.\n Eg : 480 or 720**")
+    input2: Message = await bot.listen(editable.chat.id)
+    raw_text2 = input2.text
+    await input2.delete(True)
+    try:
+        if raw_text2 == "144":
+            res = "256x144"
+        elif raw_text2 == "240":
+            res = "426x240"
+        elif raw_text2 == "360":
+            res = "640x360"
+        elif raw_text2 == "480":
+            res = "854x480"
+        elif raw_text2 == "720":
+            res = "1280x720"
+        elif raw_text2 == "1080":
+            res = "1920x1080" 
+        else: 
             res = "UN"
-        
-        await editable.edit("**Enter your name or send `df` to use default. 📝**")
-        input3: Message = await bot.listen(chat_id)
-        raw_text3 = input3.text
-        await input3.delete(True)
-        if raw_text3 == 'df':
-            CR = '🌹🌹🌹'
-        else:
-            CR = raw_text3    
-        # Asking for thumbnail
-        await editable.edit("Now upload the **Thumbnail Image** or send `no` or `df` for default thumbnail 🖼️")
-        input6 = await bot.listen(chat_id)
-
-        if input6.photo:
-            thumb = await input6.download()
-        else:
-            raw_text6 = input6.text
-            if raw_text6 == "df":
-                thumb = "thumbnail.jpg"
-            elif raw_text6.startswith("http://") or raw_text6.startswith("https://"):
-                getstatusoutput(f"wget '{raw_text6}' -O 'raw_text6.jpg'")
-                thumb = "raw_text6.jpg"
-            else:
-                thumb = "no"
-        await input6.delete(True)
-        await editable.delete()
+    except Exception:
+            res = "UN"
     
-    # Initialize count and end_count
-    count = 1
-    end_count = None
-
-    # Determine the range or starting point
-    if '-' in raw_text:
-        try:
-            start, end = map(int, raw_text.split('-'))
-            if start < 1 or end > len(links) or start >= end:
-                await editable.edit("Invalid range. Please provide a valid range within the available links.")
-                bot_running = False
-                return
-            count = start
-            end_count = end
-        except ValueError:
-            await editable.edit("Invalid input format. Please provide a valid range (e.g., 1-50) or a starting point (e.g., 5).")
-            bot_running = False
-            return
+    await editable.edit("**Enter Your Name or send 'de' for use default.\n Eg : 𝐀𝐍𝐊𝐈𝐓 𝐒𝐇𝐀𝐊𝐘𝐀™👨🏻‍💻**")
+    input3: Message = await bot.listen(editable.chat.id)
+    raw_text3 = input3.text
+    await input3.delete(True)
+    if raw_text3 == 'de':
+        CR = credit
     else:
-        try:
-            count = int(raw_text)
-            if count < 1 or count > len(links):
-                await editable.edit("Invalid start point. Please provide a valid start point within the available links.")
-                bot_running = False
-                return
-            end_count = len(links)
-        except ValueError:
-            await editable.edit("Invalid input format. Please provide a valid range (e.g., 1-50) or a starting point (e.g., 5).")
-            bot_running = False
-            return
+        CR = raw_text3
+  
+    await editable.edit("Now send the **Thumb url**\n**Eg :** ``\n\nor Send `no`")
+    input6 = message = await bot.listen(editable.chat.id)
+    raw_text6 = input6.text
+    await input6.delete(True)
+    await editable.delete()
 
-    try:
-        await process_file(bot, m, links, b_name, count, end_count, raw_text2, res, CR, raw_text4, thumb, log_channel_id, my_name, overlay, accept_logs, collection)
-    
-    except Exception as e:
-        await m.reply_text(e)
-
-# Function to process a file
-async def process_file(bot, m, links, b_name, count, end_count, raw_text2, res, CR, raw_text4, thumb, log_channel_id, my_name, overlay, accept_logs, collection):
-    global bot_running
-    global file_queue
-
-    try:
-        await bot.send_message(
-            log_channel_id, 
-            f"**•File name** - `{b_name}`\n**•Total Links Found In TXT** - `{len(links)}`\n**•RANGE** - `({count}-{end_count})`\n**•Resolution** - `{res}({raw_text2})`\n**•Caption** - **{CR}**\n**•Thumbnail** - **{thumb}**"
-        )
-        
-        # Check if the bot is already running
-        if bot_running:
-            file_queue_data = {
-                'm': m,
-                'b_name': b_name,
-                'links': links,
-                'count': count,
-                'end_count': end_count,
-                'res': res,
-                'raw_text2': raw_text2,
-                'CR': CR,
-                'raw_text4': raw_text4,
-                'thumb': thumb,
-                'log_channel_id': log_channel_id,
-                'my_name': my_name,
-                'overlay': overlay,
-                'accept_logs': accept_logs
-            }
-            file_queue.append(file_queue_data)  # Add file data to queue
-            save_queue_file(collection, file_queue)
-            await m.reply_text("Bot is currently running. Your file is queued for processing.")
-        
-        else:
-            bot_running = True
-            await process_links(bot, m, links, b_name, count, end_count, raw_text2, res, CR, raw_text4, thumb, log_channel_id, my_name, overlay, accept_logs)
-            await handle_queue(bot, m, collection)
-
-    except Exception as e:
-        msg = await m.reply_text("⚙️ Process will automatically start after completing the current one.")
-        await asyncio.sleep(10)  # Wait for 10 seconds
-        await msg.delete()  # Delete the message
-
-async def handle_queue(bot, m, collection):
-    global bot_running
-    global file_queue
-
-    while file_queue:
-        file_data = file_queue.pop(0)
-        try:
-            await process_links(bot, file_data['m'], file_data['links'], file_data['b_name'], file_data['count'], file_data['end_count'], file_data['raw_text2'], file_data['res'], file_data['CR'], file_data['raw_text4'], file_data['thumb'], file_data['log_channel_id'], file_data['my_name'], file_data['overlay'], file_data['accept_logs'])
-        except Exception as e:
-            await m.reply_text(str(e))
-    
-    # Reset bot running status after all queued processes are completed
-    bot_running = False
-
-async def process_links(bot, m, links, b_name, count, end_count, raw_text2, res, CR, raw_text4, thumb, log_channel_id, my_name, overlay, accept_logs):
-    # Your logic for processing links goes here
-    global start_time, total_running_time, max_running_time
-
-    total_running_time = load_bot_running_time(collection)
-    max_running_time = load_max_running_time(collection)
-    # Handle the case where only one link or starting from the first link
-    if count == 1:
-        chat_id = m.chat.id
-        #========================= PINNING THE BATCH NAME ======================================
-        batch_message: Message = await bot.send_message(chat_id, f"**{b_name}**")
-        
-        try:
-            await bot.pin_chat_message(chat_id, batch_message.id)
-            message_link = batch_message.link
-        except Exception as e:
-            await bot.send_message(chat_id, f"Failed to pin message: {str(e)}")
-            message_link = None  # Fallback value
-
-        message_id = batch_message.id 
-        pinning_message_id = message_id + 1
-        
-        if message_link:
-            end_message = (
-                f"⋅ ─ list index (**{count}**-**{end_count}**) out of range ─ ⋅\n\n"
-                f"✨ **BATCH** » <a href=\"{message_link}\">{b_name}</a> ✨\n\n"
-                f"⋅ ─ DOWNLOADING ✩ COMPLETED ─ ⋅"
-            )
-        else:
-            end_message = (
-                f"⋅ ─ list index (**{count}**-**{end_count}**) out of range ─ ⋅\n\n"
-                f"✨ **BATCH** » {b_name} ✨\n\n"
-                f"⋅ ─ DOWNLOADING ✩ COMPLETED ─ ⋅"
-            )
-
-        try:
-            await bot.delete_messages(chat_id, pinning_message_id)
-        except Exception as e:
-            await bot.send_message(chat_id, f"Failed to delete pinning message: {str(e)}")
+    thumb = input6.text
+    if thumb.startswith("http://") or thumb.startswith("https://"):
+        getstatusoutput(f"wget '{thumb}' -O 'thumb.jpg'")
+        thumb = "thumb.jpg"
     else:
-        end_message = (
-            f"⋅ ─ list index (**{count}**-**{end_count}**) out of range ─ ⋅\n\n"
-            f"✨ **BATCH** » {b_name} ✨\n\n"
-            f"⋅ ─ DOWNLOADING ✩ COMPLETED ─ ⋅"
-        )
+        thumb == "no"
 
-    for i in range(count - 1, end_count):
-        if total_running_time >= max_running_time:
-            await m.reply_text(f"⏳ You have used your {max_running_time / 3600:.2f} hours of bot running time. Please contact the owner to reset it.")
-            return
-
-        start_time = time.time()
-
-        if len(links[i]) != 2 or not links[i][1]:
-            # If the link is empty or not properly formatted, continue to the next iteration
-            name1 = links[i][0].replace("\t", "").replace(":", "").replace("/", "").replace("+", "").replace("#", "").replace("|", "").replace("@", "").replace("*", "").replace(".", "").replace("https", "").replace("http", "").strip()
-            name = f'{str(count).zfill(3)}) {name1[:60]} - {my_name}'
-            await m.reply_text(f"No link found for **{name}**.")
-            continue
+    count =int(raw_text)    
+    try:
+        for i in range(arg-1, len(links)):
 
 try:
             V = links[i][1].replace("file/d/","uc?export=download&id=").replace("www.youtube-nocookie.com/embed", "youtu.be").replace("?modestbranding=1", "").replace("/view?usp=sharing","") # .replace("mpd","m3u8")
