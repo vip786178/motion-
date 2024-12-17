@@ -826,7 +826,7 @@ try:
                     await m.reply_text(str(e))
                     time.sleep(e.x)
                     continue
-            else:
+              else:
                 if 'penpencil' in url:
                     prog = await m.reply_text(
                         f"**🚧 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃𝐈𝐍𝐆 🚧**\n\n"
@@ -884,23 +884,71 @@ try:
                     if accept_logs == 1:
                         await helper.send_vid(bot, m, url, cc, filename, thumb, name, log_channel_id) 
                     else:
-                        await helper.send_vid(bot, m, cc, filename, thumb, name, prog)
-                    count += 1
-                    time.sleep(1)
+                        await helper.send_video_normal(bot, m, url, cc, filename, thumb, name)
+                count += 1
 
-            except Exception as e:
+            elapsed_time = time.time() - start_time
+            total_running_time = save_bot_running_time(collection, elapsed_time)
+            start_time = None
+            
+        except Exception as e:
+            logging.error(e)
+            if "pw.jarviss.workers" in url and "mpd" in url:
                 await m.reply_text(
-                    f"⌘ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝐈𝐧𝐭𝐞𝐫𝐮𝐩𝐭𝐞𝐝\n{str(e)}\n⌘ 𝐍𝐚𝐦𝐞 » {name}\n⌘ 𝐋𝐢𝐧𝐤 » `{url}`"
-                )
-                continue
+                f"**❌ Download Failed! (PW DRM) ❌**\n\n"
+                f"**🎬 Name » ** `{name}`\n"
+                f"**🔍 Quality » ** `{raw_text2}`\n"
+                f"**🌐 URL » ** `{url}`\n\n"
+                f"Please check the URL and try again. 🔄\n\n"
+                f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
+            )
+            elif "cpvod" in url:
+                await m.reply_text(
+                f"**❌ Download Failed! (CPVOD DRM) ❌**\n\n"
+                f"**🎬 Name » ** `{name}`\n"
+                f"**🔍 Quality » ** `{raw_text2}`\n"
+                f"**🌐 URL » ** `{url}`\n\n"
+                f"Please check the URL and try again. 🔄\n\n"
+                f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
+            )
+            elif "vdocipher" in url:
+                await m.reply_text(
+                f"**❌ Download Failed! (VDOCIPHER DRM) ❌**\n\n"
+                f"**🎬 Name » ** `{name}`\n"
+                f"**🔍 Quality » ** `{raw_text2}`\n"
+                f"**🌐 URL » ** `{url}`\n\n"
+                f"Please check the URL and try again. 🔄\n\n"
+                f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
+            )
+            elif "vimeo" in url:
+                await m.reply_text(
+                f"**❌ Download Failed! (VIMEO DRM) ❌**\n\n"
+                f"**🎬 Name » ** `{name}`\n"
+                f"**🔍 Quality » ** `{raw_text2}`\n"
+                f"**🌐 URL » ** `{url}`\n\n"
+                f"Please check the URL and try again. 🔄\n\n"
+                f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
+            )
+            else:
+                await m.reply_text(
+                f"**❌ Download Failed! ❌**\n\n"
+                f"**🎬 Name » ** `{name}`\n"
+                f"**🔍 Quality » ** `{raw_text2}`\n"
+                f"**🌐 URL » ** `{url}`\n\n"
+                f"Please check the URL and try again. 🔄\n\n"
+                f"╰────⌈**✨ 𝐊𝐔𝐍𝐀𝐋 (@ikunalx) ✨**⌋────╯"
+            )
+            time.sleep(3)
+            count += 1
+            continue
             
-    bot_running = False
-    start_time = None
-    await m.reply_text(f"{end_message}")
-    if accept_logs == 1:
-        await bot.send_message(log_channel_id, f"{end_message}")
-    await m.reply_text("That's it ❤️")
-            
+except Exception as e:
+        await m.reply_text(e)
+    await m.reply_text("🚦𝐃𝐎𝐍𝐄🚦")
+
+print("""✅ 𝐃𝐞𝐩𝐥𝐨𝐲 𝐒𝐮𝐜𝐜𝐞𝐬𝐬𝐟𝐮𝐥𝐥𝐲 ✅""")
+print("""✅ 𝐁𝐨𝐭 𝐖𝐨𝐫𝐤𝐢𝐧𝐠 ✅""")
+
 bot.run()
 if __name__ == "__main__":
     asyncio.run(main())
