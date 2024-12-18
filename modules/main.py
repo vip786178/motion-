@@ -15,6 +15,10 @@ from pyromod import listen
 from subprocess import getstatusoutput
 from aiohttp import web
 
+from pytube import Playlist  #Youtube Playlist Extractor
+from yt_dlp import YoutubeDL
+import yt_dlp as youtube_dl
+
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from pyrogram.errors import FloodWait
@@ -118,6 +122,106 @@ async def start(client: Client, msg: Message):
         "Checking status Ok... Command Nhi Bataunga **Bot Made BY 𝐀𝐍𝐊𝐈𝐓 𝐒𝐇𝐀𝐊𝐘𝐀™👨🏻‍💻**🔍\n\n"
         "Progress: [🟩🟩🟩🟩🟩🟩🟩🟩🟩] 100%\n\n"
     )
+
+#==========================  YOUTUBE EXTRACTOR =======================
+
+@bot.on_message(filters.command('youtube') & auth_or_owner_filter)
+async def run_bot(client: Client, message: Message):
+    await message.delete()
+    editable = await message.reply_text("Enter the YouTube Webpage URL And I will extract it into .txt file: ")
+    input_msg = await client.listen(editable.chat.id)
+    youtube_url = input_msg.text
+    await input_msg.delete()
+    await editable.delete()
+
+    if 'playlist' in youtube_url:
+        playlist_title, videos = get_playlist_videos(youtube_url)
+        
+        if videos:
+            file_name = f'{playlist_title}.txt'
+            with open(file_name, 'w', encoding='utf-8') as file:
+                for title, url in videos.items():
+                    file.write(f'{title}: {url}\n')
+            
+            await message.reply_document(document=file_name, caption="Here Is The Text File Of Your YouTube Playlist")
+            os.remove(file_name)
+        else:
+            await message.reply_text("An error occurred while retrieving the playlist.")
+    else:
+        video_links, channel_name = get_all_videos(youtube_url)
+
+        if video_links:
+            file_name = save_to_file(video_links, channel_name)
+            await message.reply_document(document=file_name, caption="Here Is The Text File Of Your YouTube Playlist")
+            os.remove(file_name)          
+        else:
+            await message.reply_text("No videos found or the URL is incorrect.")
+
+def get_playlist_videos(playlist_url):
+    try:
+        # Create a Playlist object
+        playlist = Playlist(playlist_url)
+        
+        # Get the playlist title
+        playlist_title = playlist.title
+        
+        # Initialize an empty dictionary to store video names and links
+        videos = {}
+        
+        # Iterate through the videos in the playlist
+        for video in playlist.videos:
+            try:
+                video_title = video.title
+                video_url = video.watch_url
+                videos[video_title] = video_url
+            except Exception as e:
+                logging.error(f"Could not retrieve video details: {e}")
+        
+        return playlist_title, videos
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+        return None, None
+
+def get_all_videos(channel_url):
+    ydl_opts = {
+        'quiet': True,
+        'extract_flat': True,
+        'skip_download': True
+    }
+
+    all_videos = []
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        result = ydl.extract_info(channel_url, download=False)
+        
+        if 'entries' in result:
+            channel_name = result['title']
+            all_videos.extend(result['entries'])
+            
+            while 'entries' in result and '_next' in result:
+                next_page_url = result['_next']
+                result = ydl.extract_info(next_page_url, download=False)
+                all_videos.extend(result['entries'])
+            
+            video_links = {index+1: (video['title'], video['url']) for index, video in enumerate(all_videos)}
+            return video_links, channel_name
+        else:
+            return None, None
+
+def save_to_file(video_links, channel_name):
+    # Sanitize the channel name to be a valid filename
+    sanitized_channel_name = re.sub(r'[^\w\s-]', '', channel_name).strip().replace(' ', '_')
+    filename = f"{sanitized_channel_name}.txt"    
+    with open(filename, 'w', encoding='utf-8') as file:
+        for number, (title, url) in video_links.items():
+            # Ensure the URL is formatted correctly
+            if url.startswith("https://"):
+                formatted_url = url
+            elif "shorts" in url:
+                formatted_url = f"https://www.youtube.com{url}"
+            else:
+                formatted_url = f"https://www.youtube.com/watch?v={url}"
+            file.write(f"{number}. {title}: {formatted_url}\n")
+    return filename        
 
 @bot.on_message(filters.command(["stop"]) )
 async def restart_handler(_, m):
