@@ -30,6 +30,8 @@ bot = Client(
     bot_token=BOT_TOKEN
 )
 
+cookies_file_path = "modules/cookies.txt"
+
 # Define aiohttp routes
 routes = web.RouteTableDef()
 
