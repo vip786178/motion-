@@ -125,7 +125,7 @@ async def start(client: Client, msg: Message):
 
 #==========================  YOUTUBE EXTRACTOR =======================
 
-@bot.on_message(filters.command('youtube') & auth_or_owner_filter)
+@bot.on_message(filters.command('youtube'))
 async def run_bot(client: Client, message: Message):
     await message.delete()
     editable = await message.reply_text("Enter the YouTube Webpage URL And I will extract it into .txt file: ")
