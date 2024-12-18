@@ -106,16 +106,15 @@ async def start(client: Client, msg: Message):
     await asyncio.sleep(1)
     await start_message.edit_text(
         Data.START.format(msg.from_user.mention) +
-        "Checking subscription status... 🔍\n\n"
+        "Checking Bot Status... 🔍\n\n"
         "Progress: [🟨🟨🟨🟨🟨🟨🟨⬜⬜] 75%\n\n"
     )
 
     await asyncio.sleep(1)
-    if msg.from_user.id in authorized_users:
-        await start_message.edit_text(
-            Data.START.format(msg.from_user.mention) +
-            "Great!, You are a premium member! 🌟 press `/help` in order to use me properly\n\n",
-            reply_markup=help_button_keyboard
+    await start_message.edit_text(
+        Data.START.format(msg.from_user.mention) +
+        "Checking status Ok... Command Nhi Bataunga **Bot Made BY 𝐀𝐍𝐊𝐈𝐓 𝐒𝐇𝐀𝐊𝐘𝐀™👨🏻‍💻**🔍\n\n"
+        "Progress: [🟩🟩🟩🟩🟩🟩🟩🟩🟩] 100%\n\n"
     )
 
 @bot.on_message(filters.command(["stop"]) )
@@ -123,7 +122,7 @@ async def restart_handler(_, m):
     await m.reply_text("**STOPPED**🛑", True)
     os.execl(sys.executable, sys.executable, *sys.argv)
 
-@bot.on_message(filters.command(["ankt","upload"]) )
+@bot.on_message(filters.command(["shilu","ankitshakya"]) )
 async def txt_handler(bot: Client, m: Message):
     editable = await m.reply_text(f"**🔹Hi I am Poweful TXT Downloader📥 Bot.**\n🔹**Send me the TXT file and wait.**")
     input: Message = await bot.listen(editable.chat.id)
