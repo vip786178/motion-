@@ -393,7 +393,7 @@ async def txt_handler(bot: Client, m: Message):
 
     except Exception as e:
         await m.reply_text(e)
-    await m.reply_text("**Done✅**")
+    await m.reply_text("**𝗗𝗢𝗡𝗘✅**")
     
 bot.run()
 if __name__ == "__main__":
