@@ -349,7 +349,7 @@ async def txt_handler(bot: Client, m: Message):
                 cmd = f'yt-dlp -f "{ytf}" "{url}" -o "{name}.mp4"'
 
             try:                               
-                cc = f'**[🎞️] Vid_ID :** {str(count).zfill(3)}\n\n**Video Title :** {name1}( @ANKIT_SHAKYA73 ).mkv\n\n**Batch Name :** {b_name}\n\n**Extracted By ➤ {CR}** Bot By ➤ ᴀɴᴋɪᴛ sʜᴀᴋʏᴀ'
+                cc = f'**[🎞️] Vid_ID :** {str(count).zfill(3)}\n\n**Video Title :** {name1}( @ANKIT_SHAKYA73 )({res}).mkv\n\n**Batch Name :** {b_name}\n\n**Extracted By ➤ {CR}** Bot By ➤ ᴀɴᴋɪᴛ sʜᴀᴋʏᴀ'
                 cc1 = f'**[📄] Pdf_ID :** {str(count).zfill(3)}\n\n**File Title :** {name1}( @ANKIT_SHAKYA73 ).pdf\n\n**Batch Name :** {b_name}\n\n**Extracted By ➤ {CR}**Bot By ➤ᴀɴᴋɪᴛ sʜᴀᴋʏᴀ'
                 if "drive" in url:
                     try:
@@ -376,7 +376,7 @@ async def txt_handler(bot: Client, m: Message):
                         time.sleep(e.x)
                         continue
                 else:
-                    Show = f"❊⟱ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 ⟱❊ »\n\n📝 𝐍𝐚𝐦𝐞 » `{name}\n⌨ 𝐐𝐮𝐥𝐢𝐭𝐲 » {raw_text2}`\n\n**🔗 𝐔𝐑𝐋 »** `{url}`"
+                    Show = f"𝗗𝗼𝘄𝗻𝗹𝗼𝗮𝗱𝗶𝗻𝗴 📥\n\n📝 𝐍𝐚𝐦𝐞 » `{name}\n⌨ 𝐐𝐮𝐥𝐢𝐭𝐲 » {raw_text2}`\n\n**🔗 𝐔𝐑𝐋 »** `{url}`"
                     prog = await m.reply_text(Show)
                     res_file = await helper.download_video(url, cmd, name)
                     filename = res_file
