@@ -297,6 +297,15 @@ async def txt_handler(bot: Client, m: Message):
         CR = credit
     else:
         CR = raw_text3
+
+    await editable.edit("**Enter Your PW Token For MPD URL or send 'unknown' for use default**")
+    input4: Message = await bot.listen(editable.chat.id)
+    raw_text4 = input4.text
+    await input4.delete(True)
+    if raw_text4 == 'pw':
+        token = pw_token
+    else:
+        token = raw_text4
   
     await editable.edit("Now send the **Thumb url**\n**Eg :** ``\n\nor Send `no`")
     input6 = message = await bot.listen(editable.chat.id)
@@ -333,7 +342,7 @@ async def txt_handler(bot: Client, m: Message):
                 
             elif "master.mpd" in url:
                 vid_id = url.split('/')[-2]
-                url = f"https://madxpw.onrender.com/{vid_id}/master.m3u8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzUwNjM5NTMuNTY1LCJkYXRhIjp7Il9pZCI6IjYwY2MwZmY2OWFhYWU0MDAxMTI0NjljZiIsInVzZXJuYW1lIjoiOTAyNDIxMzMwMSIsImZpcnN0TmFtZSI6IkFuaWxEb2J3YWwiLCJsYXN0TmFtZSI6IiIsIm9yZ2FuaXphdGlvbiI6eyJfaWQiOiI1ZWIzOTNlZTk1ZmFiNzQ2OGE3OWQxODkiLCJ3ZWJzaXRlIjoicGh5c2ljc3dhbGxhaC5jb20iLCJuYW1lIjoiUGh5c2ljc3dhbGxhaCJ9LCJlbWFpbCI6Imd1bGFibWVlbmE2NEBnbWFpbC5jb20iLCJyb2xlcyI6WyI1YjI3YmQ5NjU4NDJmOTUwYTc3OGM2ZWYiXSwiY291bnRyeUdyb3VwIjoiSU4iLCJ0eXBlIjoiVVNFUiJ9LCJpYXQiOjE3MzQ0NTkxNTN9.zrVcxvm5vq1CAF9srhui1n4YP1ddSR77v0O3IOr-TaI"
+                url = f"https://madxpw.onrender.com/{vid_id}/master.m3u8?token={vid_id}"
                 
             name1 = links[i][0].replace("\t", "").replace(":", "").replace("/", "").replace("+", "").replace("#", "").replace("|", "").replace("@", "").replace("*", "").replace(".", "").replace("https", "").replace("http", "").strip()
             name = f'{str(count).zfill(3)}) {name1[:60]}'
@@ -354,8 +363,9 @@ async def txt_handler(bot: Client, m: Message):
                 cmd = f'yt-dlp -f "{ytf}" "{url}" -o "{name}.mp4"'
 
             try:                               
-                cc = f'**[🎞️] Vid_ID :** {str(count).zfill(3)}\n\n**Video Title :** {name1}( @ANKIT_SHAKYA73 ){res}.mkv\n\n**Batch Name :** {b_name}\n\n**Extracted By ➤ {CR}\n\n**𝐁𝐨𝐭 𝐁𝐲 ➤ ᴀɴᴋɪᴛ sʜᴀᴋʏᴀ'
-                cc1 = f'**[📄] Pdf_ID :** {str(count).zfill(3)}\n\n**File Title :** {name1}( @ANKIT_SHAKYA73 ).pdf\n\n**Batch Name :** {b_name}\n\n**Extracted By ➤ {CR}\n\n**𝐁𝐨𝐭 𝐁𝐲 ➤ ᴀɴᴋɪᴛ sʜᴀᴋʏᴀ'
+                cc = f'**🎞️ VID_ID: {str(count).zfill(3)}.\n\n📄 Title: {name1} @Ankit_Shakya73 {res}.mkv\n\n<pre><code>🔖 Batch Name: {b_name}</code></pre>\n\n📥 Extracted By : {CR}**'
+                cc1 = f'**📁 PDF_ID: {str(count).zfill(3)}.\n\n📄 Title: {name1} @Ankit_Shakya73.pdf\n\n<pre><code>🔖 Batch Name: {b_name}</code></pre>\n\n📥 Extracted By : {CR}**'
+                    
                 if "drive" in url:
                     try:
                         ka = await helper.download(url, name)
@@ -367,7 +377,40 @@ async def txt_handler(bot: Client, m: Message):
                         await m.reply_text(str(e))
                         time.sleep(e.x)
                         continue
-                
+
+                elif ".pdf" in url:
+                    try:
+                        await asyncio.sleep(4)
+        # Replace spaces with %20 in the URL
+                        url = url.replace(" ", "%20")
+ 
+        # Create a cloudscraper session
+                        scraper = cloudscraper.create_scraper()
+
+        # Send a GET request to download the PDF
+                        response = scraper.get(url)
+
+        # Check if the response status is OK
+                        if response.status_code == 200:
+            # Write the PDF content to a file
+                            with open(f'{name}.pdf', 'wb') as file:
+                                file.write(response.content)
+
+            # Send the PDF document
+                            await asyncio.sleep(4)
+                            copy = await bot.send_document(chat_id=m.chat.id, document=f'{name}.pdf', caption=cc1)
+                            count += 1
+
+            # Remove the PDF file after sending
+                            os.remove(f'{name}.pdf')
+                        else:
+                            await m.reply_text(f"Failed to download PDF: {response.status_code} {response.reason}")
+
+                    except FloodWait as e:
+                        await m.reply_text(str(e))
+                        time.sleep(e.x)
+                        continue
+
                 elif ".pdf" in url:
                     try:
                         cmd = f'yt-dlp -o "{name}.pdf" "{url}"'
