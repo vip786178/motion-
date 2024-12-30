@@ -34,7 +34,8 @@ bot = Client(
     bot_token=BOT_TOKEN
 )
 
-cookies_file_path = "modules/cookies.txt"
+
+cookies_file_path = os.getenv("COOKIES_FILE_PATH", "youtube_cookies.txt")
 
 # Define aiohttp routes
 routes = web.RouteTableDef()
