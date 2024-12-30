@@ -35,7 +35,7 @@ bot = Client(
 )
 
 
-cookies_file_path = os.getenv("COOKIES_FILE_PATH", "cookies.txt")
+cookies_file_path = "cookies.txt"
 
 # Define aiohttp routes
 routes = web.RouteTableDef()
