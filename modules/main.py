@@ -151,13 +151,6 @@ async def start(client: Client, msg: Message):
         "Checking status Ok... Command Nhi Bataunga **Bot Made BY @captain_king_09**🔍\n\n"
         "Progress:[🟩🟩🟩🟩🟩🟩🟩🟩🟩] 100%\n\n"
     )
-                    [
-                    InlineKeyboardButton("✜ 𝐉𝐨𝐢𝐧 𝐔𝐩𝐃𝐚𝐭𝐞 𝐂𝐡𝐚𝐧𝐧𝐞𝐥 ✜" ,url=f"https://t.me/+a6jXvJm5_5lmOGVl") ],
-                    [
-                    InlineKeyboardButton("✜ @CAPTAIN_KING_09✜" ,url="@captain_king_09") ],
-                    [
-                    InlineKeyboardButton("❣️ 𝐅𝐨𝐥𝐥𝐨𝐰 𝐌𝐞 ❣️" ,url="https://https://t.me/+a6jXvJm5_5lmOGVl") ],                          
-
 
 @bot.on_message(filters.command(["stop"]) )
 async def restart_handler(_, m):
