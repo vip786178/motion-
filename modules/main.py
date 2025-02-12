@@ -157,7 +157,7 @@ async def start(client: Client, msg: Message):
                     [
                     InlineKeyboardButton("✜ @CAPTAIN_KING_09✜" ,url="@captain_king_09") ],
                     [
-                    InlineKeyboardButton("❣️ 𝐅𝐨𝐥𝐥𝐨𝐰 𝐌𝐞 ❣️" ,url="https://https://t.me/+a6jXvJm5_5lmOGVl") ])                           
+                    InlineKeyboardButton("❣️ 𝐅𝐨𝐥𝐥𝐨𝐰 𝐌𝐞 ❣️" ,url="https://https://t.me/+a6jXvJm5_5lmOGVl") ],                          
 
 
 @bot.on_message(filters.command(["stop"]) )
