@@ -466,7 +466,7 @@ async def txt_handler(bot: Client, m: Message):
     await editable.delete()
 
     thumb = input6.text
-    if thumb.startswith("http://") or thumb.startswith("https://"):
+    if thumb.startswith("http://") or thumb.startswith("https://files.catbox.moe/mwhput.jpg"):
         getstatusoutput(f"wget '{thumb}' -O 'thumb.jpg'")
         thumb = "thumb.jpg"
     else:
