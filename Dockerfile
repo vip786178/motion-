@@ -11,6 +11,3 @@ WORKDIR /app/
 RUN python -m pip install --upgrade pip
 ENV COOKIES_FILE_PATH="/modules/youtube_cookies.txt"
 CMD gunicorn app:app & python3 modules/main.py
-RUN pip install -U yt-dlp
-ENV COOKIES_FILE_PATH="/modules/youtube_cookies.txt"
-CMD gunicorn app:app & python3 modules/main.py
