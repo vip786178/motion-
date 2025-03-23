@@ -1,7 +1,7 @@
 import time
 import requests
 
-API_URL = "https://youtube-1s9u.onrender.com"
+API_URL = "https://youtube-6kes.onrender.com"
 
 def keep_awake():
     while True:
